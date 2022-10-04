@@ -17,30 +17,32 @@ namespace EFCore_Autorepair
         {
             using (AutorepairContext context = new AutorepairContext())
             {
-                SelectFromOwner(context, 20); // 1. Выбор N владельцев
+                //SelectFromOwner(context, 20); // 1. Выбор N владельцев
 
-                SelectFromCarsByPowerAndYear(context, 500, 2010); // 2. Выборка по нескольким полям (Выбор авто по мощности и году)
-                SelectFromCarsByOwnerId(context, 7); // 2. Выборка по одному полю. (Автомобили заданного владельца)
+                //SelectFromCarsByPowerAndYear(context, 500, 2010); // 2. Выборка по нескольким полям (Выбор авто по мощности и году)
+                //SelectFromCarsByOwnerId(context, 10); // 2. Выборка по одному полю. (Автомобили заданного владельца)
 
-                SelectGroupByYearCars(context); // 3. Выборка по group by (Вывод кол-во автомобилей для каждого года)
+                //SelectGroupByYearCars(context); // 3. Выборка по group by (Вывод кол-во автомобилей для каждого года)
 
-                SelectMechanicAndQualification(context, 50); // 4. Выборку данных из 2 таблиц, «один - ко - многим» (Вывод механиков и название их квалификаций)
-                SelectMechanicAndQualificationByQualifNameAndExperience(context, 3, 10, 10); // 5. Выборку данных из 2 таблиц, «один - ко - многим» и отфильтрованным
+                //SelectMechanicAndQualification(context, 50); // 4. Выборку данных из 2 таблиц, «один - ко - многим» (Вывод механиков и название их квалификаций)
+                
+                
+                //SelectMechanicAndQualificationByQualifNameAndExperience(context, 3, 10, 50); // 5. Выборку данных из 2 таблиц, «один - ко - многим» и отфильтрованным
                                                                                              // по некоторому условию, налагающему ограничения на значения нескольких полей
                                                                                              // (Вывод механиков с заданной квалификацией и больше чем заданный стаж работы)
                 
-                Insert(context); // 6.Вставку данных в таблицы, стоящей на стороне отношения «Один» – 1 шт.
+                //Insert(context); // 6.Вставку данных в таблицы, стоящей на стороне отношения «Один» – 1 шт.
                                  // 7.Вставку данных в таблицы, стоящей на стороне отношения «Многие» – 1 шт.
                                  // (Вставка в таблицу квалификация(«Один») и вставка в таблицу механики(«Многие»))
 
                 // 8.Удаление данных из таблицы, стоящей на стороне отношения «Один» – 1 шт.
                 // 9.Удаление данных из таблицы, стоящей на стороне отношения «Многие» – 1 шт.
-                DeleteByMechanic(context, "Ivan", "Ivanov", "Ivanovich"); // Удаление заданного механика(по ФИО)
-                DeleteByQualificationAndMechanicWithQualification(context, "6 разряд"); // Удаление квалификации и(каскадно) всех механиков с заданной квалификацией
+                //DeleteByMechanic(context, "Ivan", "Ivanov", "Ivanovich"); // Удаление заданного механика(по ФИО)
+                //DeleteByQualificationAndMechanicWithQualification(context, "6 разряд"); // Удаление квалификации и(каскадно) всех механиков с заданной квалификацией
                 
                 // 10.Обновление удовлетворяющих определенному условию записей в любой из таблиц базы данных – 1 шт.
                 // Изменение мощности всем автомобилям владельца.
-                UpdatePowerCarById(context, 7, 310);
+                UpdatePowerCarById(context, 10, 410);
             }
 
             // 1.Выборку всех данных из таблицы, стоящей в схеме базы данных нас стороне отношения «один» – 1 шт.
@@ -73,7 +75,7 @@ namespace EFCore_Autorepair
             // Выбор авто по мощности и году
             static void SelectFromCarsByPowerAndYear(AutorepairContext context, int power, int year)
             {
-                var queryLINQ = context.Cars.Where(c => c.CarId < 50 && c.Power < 500 && c.Year > 2010);
+                var queryLINQ = context.Cars.Where(c => c.CarId < 50 && c.Power > 500 && c.Year > 2010);
 
                 foreach (var c in queryLINQ)
                 {
@@ -213,13 +215,14 @@ namespace EFCore_Autorepair
             {
                 IQueryable<Mechanic> mechanics = context.Mechanics.Where(m => m.FirstName == firstName && m.LastName == lastName && m.MiddleName == middleName);
 
+                foreach (Mechanic m in mechanics)
+                {
+                    Console.WriteLine($"Механик {m.MechanicId} {m.FirstName} {m.MiddleName} {m.LastName}  был удален с БД!");
+                }
+
                 context.Mechanics.RemoveRange(mechanics);
                 context.SaveChanges();
 
-                foreach(Mechanic m in mechanics)
-                {
-                    Console.WriteLine($"Механик {m.ToString} был удален с БД!");
-                }
             }
 
             // 10.Обновление удовлетворяющих определенному условию записей в любой из таблиц базы данных – 1 шт.
